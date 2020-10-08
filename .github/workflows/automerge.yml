@@ -10,16 +10,8 @@ on:
       - ready_for_review
       - reopened
       - unlocked
-  pull_request:
-    types:
-      - labeled
-      - unlabeled
-      - synchronize
-      - opened
-      - edited
-      - ready_for_review
-      - reopened
-      - unlocked
+    paths:
+    - '*.py'
   pull_request_review:
     types:
       - submitted
@@ -31,6 +23,21 @@ jobs:
   automerge:
     runs-on: ubuntu-latest
     steps:
+      - name: setup
+        uses: actions/checkout@v2
+        with:
+         ref: ${{github.event.pull_request.head.ref}}
+         repository: ${{github.event.pull_request.head.repo.full_name}}
+         fetch-depth: 0
+      - name: get changed files
+        id: getchfile
+        run: |
+          echo "::set-output name=files::$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | xargs)"
+          echo ${{ steps.getchfile.outputs.files }}
+          #could try to decode what's encoded like
+          #"${description//'%'/'%25'}"
+          #"${description//$'\n'/'%0A'}"
+          #description="${description//$'\r'/'%0D'}"
       - name: Create issue using REST API
         run: |
          curl --request POST \
