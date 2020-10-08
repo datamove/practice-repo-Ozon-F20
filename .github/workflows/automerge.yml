@@ -1,5 +1,15 @@
 name: automerge
 on:
+  pull_request_target:
+    types:
+      - labeled
+      - unlabeled
+      - synchronize
+      - opened
+      - edited
+      - ready_for_review
+      - reopened
+      - unlocked
   pull_request:
     types:
       - labeled
