@@ -32,7 +32,10 @@ jobs:
       - name: get changed files
         id: getchfile
         run: |
-          echo "::set-output name=files::$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | xargs)"
+          echo BASE SHA ${{ github.event.pull_request.base.sha }}
+          echo HEASD SHA ${{ github.event.pull_request.head.sha }}
+          echo SHA ${{ github.sha }}
+          echo "::set-output name=files::$(git diff-tree --no-commit-id --name-only -r ${{ github.event.pull_request.base.sha }} | xargs)"
           echo ${{ steps.getchfile.outputs.files }}
           #could try to decode what's encoded like
           #"${description//'%'/'%25'}"
@@ -48,8 +51,16 @@ jobs:
            "title": "Automated issue for commit: ${{ github.sha }}",
            "body": "This issue was automatically created by the GitHub Action workflow **${{ github.workflow }}**. \n\n The commit hash was: _${{ github.sha }}_."
           }'
-      - name: automerge
-        uses: pascalgn/automerge-action@v0.11.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: merge pull request
+        run: |
+          curl \
+          -X PUT \
+          -H "Accept: application/vnd.github.v3+json" \
+           --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+          ${{ github.event.pull_request.url }}/merge \
+          -d '{"commit_title":"automerging"}'
+#      - name: automerge
+#        uses: pascalgn/automerge-action@v0.11.0
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
