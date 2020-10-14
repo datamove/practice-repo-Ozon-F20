@@ -41,16 +41,6 @@ jobs:
           #"${description//'%'/'%25'}"
           #"${description//$'\n'/'%0A'}"
           #description="${description//$'\r'/'%0D'}"
-      - name: Create issue using REST API
-        run: |
-         curl --request POST \
-         --url https://api.github.com/repos/${{ github.repository }}/issues \
-         --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
-         --header 'content-type: application/json' \
-         --data '{
-           "title": "Automated issue for commit: ${{ github.sha }}",
-           "body": "This issue was automatically created by the GitHub Action workflow **${{ github.workflow }}**. \n\n The commit hash was: _${{ github.sha }}_."
-          }'
       - name: merge pull request
         run: |
           curl \
@@ -58,9 +48,5 @@ jobs:
           -H "Accept: application/vnd.github.v3+json" \
            --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
           ${{ github.event.pull_request.url }}/merge \
-          -d '{"commit_title":"automerging"}'
-#      - name: automerge
-#        uses: pascalgn/automerge-action@v0.11.0
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          -d '{"commit_title":"automerging pr ${{github.event.pull_request.number }} for ${{ github.event.pull_request.user.login }}" }'
 
