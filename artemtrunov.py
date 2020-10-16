@@ -1,1 +1,1 @@
-print("hello artemtrunov 5")
+print("hello artemtrunov 6")
