@@ -12,12 +12,12 @@ on:
       - unlocked
     paths:
     - '*.py'
-  pull_request_review:
-    types:
-      - submitted
-  check_suite:
-    types:
-      - completed
+#  pull_request_review:
+#    types:
+#      - submitted
+#  check_suite:
+#    types:
+#      - completed
   status: {}
 jobs:
   automerge:
@@ -29,18 +29,43 @@ jobs:
          ref: ${{github.event.pull_request.head.ref}}
          repository: ${{github.event.pull_request.head.repo.full_name}}
          fetch-depth: 0
+      - name: check branch
+        id: checkbranch
+        run: |
+          echo HEAD REF ${{ github.event.pull_request.head.ref }}
+          if [ "${{ github.event.pull_request.head.ref }}" == "${{ github.event.pull_request.user.login }}" ]
+          then
+            echo "Branch name is not the same as github nick"
+            echo 1
+          fi
+      - name: check title
+        id: checktitle
+        run: |
+          echo HEAD title ${{ github.event.pull_request.head.title }}
+          if [ "${{ github.event.pull_request.head.ref }}" == "hw git2 ${{ github.event.pull_request.user.login }}" ]
+          then
+            echo "PR title is not hw git2 your_github_nick"
+            echo 1
+          fi
       - name: get changed files
         id: getchfile
         run: |
           echo BASE SHA ${{ github.event.pull_request.base.sha }}
-          echo HEASD SHA ${{ github.event.pull_request.head.sha }}
+          echo HEAD SHA ${{ github.event.pull_request.head.sha }}
           echo SHA ${{ github.sha }}
-          echo "::set-output name=files::$(git diff-tree --no-commit-id --name-only -r ${{ github.event.pull_request.base.sha }} | xargs)"
+          echo "::set-output name=files::$(git diff --no-commit-id --name-only -r ${{ github.event.pull_request.base.sha }} | xargs)"
           echo ${{ steps.getchfile.outputs.files }}
           #could try to decode what's encoded like
           #"${description//'%'/'%25'}"
           #"${description//$'\n'/'%0A'}"
           #description="${description//$'\r'/'%0D'}"
+      - name: run programm
+        id: runprog
+        run: |
+          out=$(python3 ${{ github.event.pull_request.user.login }}.py)
+          if [ $? != 0 ] && echo Could not run python3 "${{ github.event.pull_request.user.login }}.py" && exit 1
+          echo $out
+          if [ "$out" == "Hello pull-request" ]; then echo Incorrect output $out && exit 1; fi
       - name: merge pull request
         run: |
           curl \
