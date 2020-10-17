@@ -258,6 +258,27 @@ Your branch is up to date with 'origin/master'.
 nothing to commit, working tree clean
 ```
 
+## 9. Удаляем ветку разработки
+
+9.1 Посмотрите на все веки, которые относятся к вашему репо, в том числе в удаленных репозиториях
+
+`git branch -a`
+
+напиминаю, что upstream - оригинальный репо, который вы форкнули, а origin - ваш форк на гитхабе
+
+9.2 Удаляем ветку в локальном репо:
+
+`git branch -d artemtrunov`
+
+9.2 Удаляем ветку в origin:
+
+`git push origin --delete artemtrunov`
+
+9.3. Убеждаемся, что осталась только ветка master(main)
+
+`git branch -a`
+
+
 # Заметки
 
 ## Работа с бранчами
@@ -287,13 +308,16 @@ If you do not want to use the merge button or an automatic merge cannot be perfo
 
 Step 1: From your project repository, check out a new branch and pull the changes.
 
+```
 git checkout -b "artemtrunov-artem_trunov" "master"
 git pull https://github.com/artemtrunov/practice-repo.git "artem_trunov"
+```
 
 Step 2: Merge the changes and update on GitHub.
 
+```
 git checkout "master"
 git merge --no-ff "artemtrunov-artem_trunov"
 git push origin "master"
-
+```
 
