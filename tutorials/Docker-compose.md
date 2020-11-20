@@ -37,8 +37,6 @@ version: '3'
 services:
     web:
       image: flask-datamove
-        context: .
-        dockerfile: Dockerfile
       ports:
         - "127.0.0.1:2001:5000"
 ```
