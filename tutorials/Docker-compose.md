@@ -307,7 +307,7 @@ if ($http_content_type = “application/json”) {
 
 ```bash
 export APP_PORT=$((`id -u` + 1000))
-datamove@linux1:~/flask$ APP_PORT=2002 docker-compose -p $USER -f docker-compose-vars.yml up
+datamove@linux1:~/flask$ docker-compose -p $USER -f docker-compose-vars.yml up
 ```
 
 Вариант без экспорта:
