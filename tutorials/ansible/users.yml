@@ -1,0 +1,8 @@
+- hosts: test1
+  vars:
+    user_data:
+      - datamove
+      - pklemenkov
+  roles:
+    - users
+

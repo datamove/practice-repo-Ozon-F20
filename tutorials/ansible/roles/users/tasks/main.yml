@@ -1,0 +1,41 @@
+---
+# create users
+- debug: msg="students are {{ user_data }}"
+
+- name: create group
+  group:
+    name: students
+    state: present
+
+- name: Add user accounts
+  user:
+    name: "{{ item }}"
+    shell: /bin/bash
+    home: "/home/users/{{ item }}"
+    groups: [students]
+    state: present
+  with_items: "{{ user_data }}"
+
+- name: restrict student dir permissions
+  file:
+    path: "/home/users/{{ item }}"
+    mode: 0700
+  with_items: "{{ user_data }}"
+
+- name: Create .ssh dir
+  file:
+    path: "/home/users/{{ item }}/.ssh"
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    state: directory
+    mode: 0700
+  with_items: "{{ user_data }}"
+
+- name: Add public ssh keys of users
+  authorized_key:
+    user: "{{ item }}"
+    exclusive: yes
+    key: https://github.com/{{ item }}.keys
+    state: present
+  with_items: "{{ user_data }}"
+
