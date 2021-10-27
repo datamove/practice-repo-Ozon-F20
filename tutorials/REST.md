@@ -2,6 +2,8 @@
 
 ## GET issues
 
+### Список всех открытых тикетов и пул-реквестов
+
 ```bash
 $ curl -X GET https://api.github.com/repos/datamove/practice-repo/issues
 [
@@ -64,10 +66,16 @@ $ curl -X GET https://api.github.com/repos/datamove/practice-repo/issues
 ]
 ```
 
-Заметьте, что вернулся массив. По умолчанию, выдаются только открытые тикеты и пулл-реквесты. Можно передать параметер для выбора статуса тикета
+Заметьте, что вернулся массив. По умолчанию, выдаются только открытые тикеты и пулл-реквесты. Можно передать параметер для выбора статуса тикета:
 
 ```bash
 $ curl -X GET https://api.github.com/repos/datamove/practice-repo/issues?state=closed
+```
+
+Можно выбрать тикет по номеру:
+
+```bash
+$ curl -X GET https://api.github.com/repos/datamove/practice-repo/issues/1
 ```
 
 Отфильтруем записи с помощью jq:
@@ -87,11 +95,11 @@ $ curl https://api.github.com/repos/datamove/practice-repo/issues?state=closed |
 Самое время убрать progress-bar. Используйте -s. 
 
 
-#### Спецификация https://developer.github.com/v3/issues/#list-repository-issues
+API reference https://developer.github.com/v3/issues/#list-repository-issues
 
 ## POST an issue
 
-reference - https://developer.github.com/v3/issues/#create-an-issue
+API reference - https://developer.github.com/v3/issues/#create-an-issue
 
 ```bash
 $ curl -X POST https://api.github.com/repos/datamove/practice-repo/issues
@@ -115,6 +123,8 @@ $ curl -X POST https://api.github.com/repos/datamove/practice-repo/issues
 
 `chmod 600 public_repo_token`
 
+Берегите его от чужих глаз - этот токен дает доступ на гитхаб с правом записи от вашего имени (хоть и ограниченный доступ)
+
 ### token в заголовке
 ```
 $ H2="Authorization: token "`cat public_repo_token`
@@ -136,7 +146,7 @@ $ curl -X POST -H "$H2"  https://api.github.com/repos/datamove/practice-repo/iss
 Тут тоже все понятно, мы ведь никаких данных для тикета не отправили. Добавляем данные - объект json с полями title, body.
 
 ```bash
-$ curl -X POST -H "$H2" https://api.github.com/repos/datamove/practice-repo/issues -d '{"title":"test issue from datamove", "body": "yep, just a test!"}'
+$ curl -X POST -H "$H2" https://api.github.com/repos/datamove/practice-repo/issues -d '{"title":"test issue from a user", "body": "yep, just a test!"}'
 {
   "url": "https://api.github.com/repos/datamove/practice-repo/issues/63",
   "repository_url": "https://api.github.com/repos/datamove/practice-repo",
@@ -196,10 +206,10 @@ $ curl -X POST -H "$H2" https://api.github.com/repos/datamove/practice-repo/issu
 
 ## Изменяем тикет 
 
-Reference- https://developer.github.com/v3/issues/#update-an-issue
+API Reference- https://developer.github.com/v3/issues/#update-an-issue
 
 ```bash
-$ curl -X PATCH -H "$H2" https://api.github.com/repos/datamove/practice-repo/issues/63 -d '{"title":"Patched test issue from datamove", "body": "yep, just a test!"}'
+$ curl -X PATCH -H "$H2" https://api.github.com/repos/datamove/practice-repo/issues/63 -d '{"title":"Patched test issue from me", "body": "yep, just a test!"}'
 {
   "url": "https://api.github.com/repos/datamove/practice-repo/issues/63",
   "repository_url": "https://api.github.com/repos/datamove/practice-repo",
@@ -228,7 +238,7 @@ $ curl -X DELETE -H "$H2" https://api.github.com/repos/datamove/practice-repo/is
 ```
 
 Опять!! Тут дело в том, что гитхаб не дает возможность удалять через API. 
-Но можно изменить статус на `Closed` запросом PATCH.
+Но можно изменить статус на `Closed` запросом PATCH (самостоятельно).
 
 ### Используем curl в скриптах
 
@@ -279,8 +289,7 @@ mutation {
 
 _Deleting an issue_
 
-_People with admin permissions in a repository can permanently delete an issue from a repository.
-Did this doc help you?_
+_People with admin permissions in a repository can permanently delete an issue from a repository._
 
 _You can only delete issues in a repository owned by your user account. You cannot delete issues in a repository owned by another user account, even if you are a collaborator there._
 
